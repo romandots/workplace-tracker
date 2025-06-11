@@ -1,0 +1,27 @@
+version: '3'
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+  app:
+    build: .
+    command: ["/app/server"]
+    depends_on:
+      - db
+      - redis
+    environment:
+      SUPERADMIN_USERNAME: admin
+      SUPERADMIN_PASSWORD: admin
+      DATABASE_URL: postgres://app:password@db:5432/app?sslmode=disable
+      REDIS_ADDR: redis:6379
+    ports:
+      - "8080:8080"
